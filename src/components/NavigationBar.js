@@ -1,18 +1,26 @@
+// src/components/Navbar.js
 import React, { useContext } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import CartContext from '../context/CartContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import  { faShoppingBag } from '@fortawesome/free-solid-svg-icons';
+import { faShoppingBag } from '@fortawesome/free-solid-svg-icons';
+import { useAuth } from '../context/AuthContext';
 
 const Navbar = () => {
   const { cart } = useContext(CartContext);
+  const { isAuthenticated, signOut } = useAuth();
+  const navigate = useNavigate(); 
 
-  // Calculate total quantity
   const totalQuantity = cart.reduce((total, item) => total + item.quantity, 0);
- 
+
+  const handleSignOut = () => {
+    signOut();
+    navigate('/signin'); 
+  };
+
   return (
     <nav>
-      <div className="av-wrapper grey darken-3">
+      <div className="nav-wrapper grey darken-3">
         <Link to="/" className="brand-logo">AfridiStore</Link>
         <ul id="nav-mobile" className="right hide-on-med-and-down">
           <li><Link to="/">Products</Link></li>
@@ -23,6 +31,11 @@ const Navbar = () => {
               {totalQuantity > 0 && <span className="badge">{totalQuantity}</span>}
             </Link>
           </li>
+          {!isAuthenticated ? (
+            <li><Link to="/signin">Sign In</Link></li>
+          ) : (
+            <li><button onClick={handleSignOut} className="btn red">Sign Out</button></li>
+          )}
         </ul>
       </div>
     </nav>
